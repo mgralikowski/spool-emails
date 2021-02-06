@@ -19,16 +19,22 @@ class Mailer
 
     public const MESSAGE_IMMEDIATE = 'immediate';
 
-    private string $storagePath = './../storage/spool';
-
     private array $config;
 
     private array $slots;
+
+    private string $storagePath = './../storage/spool';
 
     private Swift_Transport $transport;
 
     private Swift_Mailer $mailer;
 
+    /**
+     * Mailer constructor.
+     *
+     * @param array $config SMTP configuration. @see https://swiftmailer.symfony.com/docs/sending.html#using-the-smtp-transport
+     * @param array $slots  Time slots to send emails in format HH:MM-HH:MM (range).
+     */
     public function __construct($config = [], $slots = [])
     {
         $this->config = array_merge([
@@ -43,14 +49,15 @@ class Mailer
         $this->initMailer();
     }
 
+    /**
+     * Setup swiftmailer config and base smtp transport.
+     */
     private function initMailer(): void
     {
-        // Create the Transport
         $this->transport = (new Swift_SmtpTransport($this->config['host'], $this->config['port']))
             ->setUsername($this->config['username'])
             ->setPassword($this->config['password']);
 
-        // Create the Mailer using your created Transport
         $this->mailer = new Swift_Mailer($this->transport);
     }
 
